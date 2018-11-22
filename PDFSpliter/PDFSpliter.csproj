@@ -195,6 +195,8 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\pdf.js" />
+    <Content Include="Scripts\pdf.worker.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -209,10 +211,14 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Uploads\B02360033716 erwerwerw.pdf" />
+    <Content Include="Uploads\B02360033716 ID Doc.pdf" />
+    <Content Include="Uploads\B02360033716 Test Doc 1.pdf" />
+    <Content Include="Uploads\Chillisoft.pdf" />
+    <Content Include="Uploads\sdasda asdasdas.pdf" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Uploads\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
