@@ -1,0 +1,78 @@
+﻿@model PDFSpliter.Models.ClaimDocumentModel
+<style>
+    .pdfobject-container { height: 30rem; border: 1rem solid rgba(0,0,0,.1); }
+</style>
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js" integrity="sha256-rYPX3dXq8Nh532EvCS2foeyTgmzbcC8u+nCk/rEtKXA=" crossorigin="anonymous"></script>
+@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            @Html.LabelFor(model => model.ClaimNumber, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.ClaimNumber, "", new { @type = "text" })
+                @Html.ValidationMessageFor(model => model.files, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.DocumentName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.DocumentName, "", new { @type = "text" })
+                @Html.ValidationMessageFor(model => model.DocumentName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.Pages, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.Pages, "", new { @type = "text" })
+                @Html.ValidationMessageFor(model => model.Pages, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.files, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.files, "", new { @type = "file", @multiple = "multiple" })
+                @Html.ValidationMessageFor(model => model.files, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Upload" class="btn btn-primary" />
+            </div>
+        </div>
+        <div id="example1"></div>
+
+
+    </div>
+    <script>
+        $(document).ready(function () {
+            //Step 1: Get the file from the input element
+            $('#files').change(function (event) {
+
+                var file = event.target.files[0];
+
+                //Step 2: Read the file using file reader
+                var fileReader = new FileReader();
+
+                fileReader.onload = function () {
+
+                    //Step 4:turn array buffer into typed array
+                    var typedarray = new Uint8Array(this.result);
+                    var file = new Blob([typedarray], {type: 'application/pdf'});
+                    var fileURL    = URL.createObjectURL(file);
+                    PDFObject.embed(fileURL, "#example1");
+
+                };
+                //Step 3:Read the file as ArrayBuffer
+                fileReader.readAsArrayBuffer(file);
+
+            });
+
+        });
+    </script>
+}  

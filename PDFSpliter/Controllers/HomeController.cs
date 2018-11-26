@@ -52,6 +52,11 @@ namespace PDFSpliter.Controllers
 
         }
 
+        public ActionResult PdfRender()
+        {
+            return View();
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

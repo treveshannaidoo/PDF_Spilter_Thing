@@ -216,6 +216,7 @@
     <Content Include="Uploads\B02360033716 Test Doc 1.pdf" />
     <Content Include="Uploads\Chillisoft.pdf" />
     <Content Include="Uploads\sdasda asdasdas.pdf" />
+    <Content Include="Views\Home\PdfRender.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
