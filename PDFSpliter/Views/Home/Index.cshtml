@@ -1,8 +1,9 @@
 ﻿@model PDFSpliter.Models.ClaimDocumentModel
 <script src="~/Scripts/jquery-3.3.1.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js" integrity="sha256-co9ejuqsObIaa1JBpNpa1vFVyEg8XOZTkjgvaObyjGk=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.min.js" integrity="sha256-A2izXKb/kuZYg+d0h7EtDNBwbunkO6FWsYI1LX0QyrU=" crossorigin="anonymous"></script>
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js" integrity="sha256-co9ejuqsObIaa1JBpNpa1vFVyEg8XOZTkjgvaObyjGk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.worker.min.js" integrity="sha256-A2izXKb/kuZYg+d0h7EtDNBwbunkO6FWsYI1LX0QyrU=" crossorigin="anonymous"></script>*@
 
+<script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
 @using (Html.BeginForm("Index", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
 
@@ -44,7 +45,13 @@
                 <input type="submit" value="Upload" class="btn btn-primary" />
             </div>
         </div>
-        <canvas id="the-canvas" style="border:1px solid black"></canvas>
+        <div>
+            <button id="prev">Previous</button>
+            <button id="next">Next</button>
+            &nbsp; &nbsp;
+            <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+        </div>
+        <canvas id="the-canvas"></canvas>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10 text-success">
                 @ViewBag.FileStatus
@@ -55,31 +62,66 @@
     </div>
     <script>
         $(document).ready(function () {
+            //Step 1: Get the file from the input element
             $('#files').change(function (event) {
-                debugger
-                var url = 'http://www.orimi.com/pdf-test.pdf';
-                pdfjsLib.disableWorker = true;
-                pdfjsLib.getDocument(url).then(function getPdfHelloWorld(pdf) {
-                    pdf.getPage(1).then(function getPageHelloWorld(page) {
-                        var scale = 1.5;
-                        var viewport = page.getViewport(scale);
 
-                        //
-                        // Prepare canvas using PDF page dimensions
-                        //
-                        var canvas = document.getElementById('the-canvas');
-                        var context = canvas.getContext('2d');
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
+                var file = event.target.files[0];
 
-                        //
-                        // Render PDF page into canvas context
-                        //
-                        page.render({ canvasContext: context, viewport: viewport });
+                //Step 2: Read the file using file reader
+                var fileReader = new FileReader();
+
+                fileReader.onload = function () {
+
+                    //Step 4:turn array buffer into typed array
+                    var typedarray = new Uint8Array(this.result);
+                    
+                    // Loaded via <script> tag, create shortcut to access PDF.js exports.
+                    var pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+                    // The workerSrc property shall be specified.
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+
+                    // Using DocumentInitParameters object to load binary data.
+                    var loadingTask = pdfjsLib.getDocument(typedarray);
+                    loadingTask.promise.then(function (pdf) {
+                        console.log('PDF loaded');
+
+                        // Fetch the first page
+                        var pageNumber = 1;
+                        pdf.getPage(pageNumber).then(function (page) {
+                            console.log('Page loaded');
+
+                            var scale = 1.5;
+                            var viewport = page.getViewport(scale);
+
+                            // Prepare canvas using PDF page dimensions
+                            var canvas = document.getElementById('the-canvas');
+                            var context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+
+                            // Render PDF page into canvas context
+                            var renderContext = {
+                                canvasContext: context,
+                                viewport: viewport
+                            };
+                            var renderTask = page.render(renderContext);
+                            renderTask.then(function () {
+                                console.log('Page rendered');
+                            });
+                        });
+                    }, function (reason) {
+                        // PDF loading error
+                        console.error(reason);
                     });
-                });
+
+
+                };
+                //Step 3:Read the file as ArrayBuffer
+                fileReader.readAsArrayBuffer(file);
 
             });
+        
         });
     </script>
 }  
